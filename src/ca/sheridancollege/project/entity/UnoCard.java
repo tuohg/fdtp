@@ -12,12 +12,12 @@ import ca.sheridancollege.project.Card;
 public class UnoCard extends Card{
     private UnoCardColor cardColor;
     private UnoCardValue cardValue;
-    private UnoCardState cardState;
+//    private UnoCardState cardState;
 
-    public UnoCard(UnoCardColor cardColor, UnoCardValue cardValue, UnoCardState cardState) {
+    public UnoCard(UnoCardColor cardColor, UnoCardValue cardValue) {
         this.cardColor = cardColor;
         this.cardValue = cardValue;
-        this.cardState = cardState;
+//        this.cardState = cardState;
     }
     
     
