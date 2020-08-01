@@ -19,6 +19,22 @@ public class UnoCard extends Card{
         this.cardValue = cardValue;
 //        this.cardState = cardState;
     }
+
+    public UnoCardColor getCardColor() {
+        return cardColor;
+    }
+
+    public void setCardColor(UnoCardColor cardColor) {
+        this.cardColor = cardColor;
+    }
+
+    public UnoCardValue getCardValue() {
+        return cardValue;
+    }
+
+    public void setCardValue(UnoCardValue cardValue) {
+        this.cardValue = cardValue;
+    }
     
     
     
