@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Liya
+ * @author Liya Ding
  */
 public class UnoPlayerManager {
 	private ArrayList <UnoPlayer> players;

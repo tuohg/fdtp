@@ -6,7 +6,7 @@ import ca.sheridancollege.project.UnoCard;
 /**
  * This is a subclass of Player.java
  *
- * @author Liya
+ * @author  Liya Ding
  */
 public class UnoPlayer extends Player {
 	private int playerId;
