@@ -1,7 +1,8 @@
 package ca.sheridancollege.project.controller;
 import ca.sheridancollege.project.Card;
-import ca.sheridancollege.project.Player;
+import ca.sheridancollege.project.PlayersManager;
 import ca.sheridancollege.project.entity.*;
+import ca.sheridancollege.project.player.Player;
 import java.util.*;
 
 /**
@@ -9,12 +10,8 @@ import java.util.*;
  */
 public class UnoGamePlay extends Game
 {
-   //private ArrayList<Player> currentPlayers;
-   //private UnoDeck deck;
-   //private ArrayList<Card> playerHand;
    private boolean gameDirection; // true==clockwise, false==couterclockwise
-   private Player currentPlayer;
-   private int currentPlayerID;
+   private UnoPlayer currentPlayer;
    private UnoCard topCard;
 
    private UnoCardColor validColor;
@@ -25,62 +22,73 @@ public class UnoGamePlay extends Game
    private pM  = PlayersManager.getInstance();
    private int totalPlayer = pM.totalPlayer;
 
+   private static UnoGamePlay unoGame = null;
+   private final static int N_CARDS_INI = 7;
+
    public UnoGamePlay (String name)
    {
       super(name);
-      currentPlayers = new ArrayList<Player>();
    }
 
+   public static UnoGamePlay getInstance ()
+   {
+      if (unoGame == null) {
+         unoGame = new UnoGamePlay("Uno Game");
+      }
+      return unoGame;
+   }
+
+   // UseCase #1 init table
    public void init ()
    {
-      //1,2
       table.prepareTable();
-      SignUpPlayers.sign();
-      //3
+   }
 
-      //4
+   // UseCase #2 signUp players
+   public void signUpPlayers ()
+   {
+      SignUpPlayers.sign();
+   }
+
+   // UseCase #4 setDealer
+   public void setDealer ()
+   {
       int max = 0;
       for (Player player : pM.currentPlayers) {
          UnoCard card = table.pullCard();
          UnoCardValue cardValue = card.getCardValue();
          int value = cardValue.ordinal() > 9 ? 0 : cardValue.ordinal();
          if (value > max) {
-            currentPlayer = player; //currentPlayer == dealer
+            currentPlayer = player; // Now currentPlayer is the dealer
          }
-         //5 
+         // UseCase #5 discard the card
          table.pushCard(card);
       }
+   }
 
-      //6
+   // UseCase #6 distribute 7card to players in order of dealer-first
+   public void distributeCard ()
+   {
       for (int i = 0; i < pM.totalPlayer; i++) {
          int index = (i + currentPlayer.id) % totalPlayer;
-         for (int j = 0; j < 7; j++) {
+         for (int j = 0; j < N_CARDS_INI; j++) {
             pM.currentPlayers[index].getCard(table.pullCard());
          }
       }
+   }
 
-      //7
+   // UseCase #7 draw the top card to start the game
+   // UseCase #8 determines the first player to play, who is the player ID behind the dealer
+   public void drawTopCard ()
+   {
       topCard = table.pullCard();
-      //8
       currentPlayer = pM.currentPlayers[(currentPlayer.id++) % totalPlayer];
    }
 
    @Override
    public void play ()
    {
-      while (true) {
-         //valid color
-
-         //valid value(0-9)
-
-         //wildcard
-
-         //9-1
-
-
-         //9-2
-         //player submit wild card
-      }
+      //TODO: to be implemented with VIEW
    }
 
    @Override
@@ -91,24 +99,30 @@ public class UnoGamePlay extends Game
 
    public UnoCard getTopCard ()
    {
-      return table.pullCard();
+      return topCard;
    }
 
-   public Player getPreviousPlayer (int number)
+   public Player getPreviousPlayer ()
    {
+      return pM.currentPlayers[(currentPlayer.id - 1) % totalPlayer];
    }
 
    public ArrayList<Card> getPlayerHand (String id)
    {
+      //TODO: to be implemented with playerManager and playerHandList
+      return pM.currentPlayers[id].playerHand;
    }
 
    public int getPlayerHandSize (String id)
    {
-      return currentPlayers[id].playerHand.length;
+      //TODO: to be implemented with playerManager and playerHandList
+      return pM.currentPlayers[id].playerHand.length;
    }
 
    public UnoCard getPlayerHandCard (String id, int choice)
    {
+      //TODO: to be implemented with playerManager and playerHandList
+      return pM.currentPlayers[id].playerHand[choice];
    }
 
    public boolean hasEmptyHand (String id)
@@ -128,28 +142,31 @@ public class UnoGamePlay extends Game
 
    public void showCardOptions (UnoCard topCard)
    {
-      if (topCard.getCardColor() == WILD) {
+      for (int i = 0; i < currentPlayer.playerHand.length; i++) {
+         if (isValidColor(cacurrentPlayer.playerHand[i])) {
+            System.out.println("#" + (i + 1) + " Color Matched");
+         }
+         if (isValidValue(cacurrentPlayer.playerHand[i])) {
+            System.out.println("#" + (i + 1) + "Value Matched");
+         }
+      }
+   }
 
+   public void showDrawOptions ()
+   {
+      System.out.println("Draw a card");
+      UnoCard newCard = table.pullCard();
+      if (newCard.getCardColor() == WILD) {
+         System.out.println("You've drew WILD card!");
+         table.pushCard(newCard);
+      }
+      else if (isValidColor(newCard) || isValidValue(newCard)) {
+         System.out.println("You've drew matched card!");
+         table.pushCard(newCard);
       }
       else {
-         for (UnoCard cardOnHand : currentPlayer.playerHand) {
-            if (isValidColor(cardOnHand)) {
-               System.out.println("Color Matched");
-            }
-            if (isValidValue(cardOnHand)) {
-               System.out.println("Value Matched");
-            }
-         }
-         //if no cards availble
-         System.out.println("Draw a card");
-         UnoCard newCard = table.pullCard();
-         if (newCard.getCardColor() == WILD
-             || isValidColor(newCard) || isValidValue(newCard)) {
-            table.pushCard(newCard);
-         }
-         else {
-            currentPlayer.playerHand.add(newCard);
-         }
+         System.out.println("You've got one more card in you hand");
+         currentPlayer.playerHand.add(newCard);
       }
    }
 
@@ -165,7 +182,7 @@ public class UnoGamePlay extends Game
 
    public void setCardColor (UnoCard card)
    {
-      validColor = card.cardColor;
+      validColor = card.getCardColor();
    }
 
    public boolean askReplay ()
