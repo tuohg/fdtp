@@ -1,195 +1,225 @@
 package ca.sheridancollege.project.controller;
-import ca.sheridancollege.project.Card;
-import ca.sheridancollege.project.PlayersManager;
+
 import ca.sheridancollege.project.entity.*;
-import ca.sheridancollege.project.player.Player;
+import ca.sheridancollege.project.player.*;
+import ca.sheridancollege.project.view.*;
 import java.util.*;
 
 /**
  * @author Ye Eun Park is going to be the greatest Java programmer of all time
+ * @review Hangge Tuo
  */
-public class UnoGamePlay extends Game
-{
-   private boolean gameDirection; // true==clockwise, false==couterclockwise
-   private UnoPlayer currentPlayer;
-   private UnoCard topCard;
+public class UnoGamePlay extends Game {
 
-   private UnoCardColor validColor;
-   private UnoCardValue validValue;
-   private static final UnoCardColor WILD = UnoCardColor.WILD;
+    private boolean gameDirection = true; // true==clockwise, false==couterclockwise
+//   private UnoPlayer[] currentPlayers;
+    private UnoCard topCard;
+    private UnoDeck deck;
+    private int currentPlayerIndex;
 
-   public table  = UnoTable.getInstance();
-   private pM  = PlayersManager.getInstance();
-   private int totalPlayer = pM.totalPlayer;
+    private UnoCardColor validColor;
+//    private UnoCardValue validValue;
+    private static final UnoCardColor WILD = UnoCardColor.WILD;
 
-   private static UnoGamePlay unoGame = null;
-   private final static int N_CARDS_INI = 7;
+//   private int totalPlayer = pM.totalPlayer;
+    private static UnoGamePlay unoGame = null;
+    private final static int N_CARDS_INI = 7;
 
-   public UnoGamePlay (String name)
-   {
-      super(name);
-   }
+    private UnoGamePlay(String name) {
+        super(name);
+        deck = UnoDeck.getInstance();
+    }
 
-   public static UnoGamePlay getInstance ()
-   {
-      if (unoGame == null) {
-         unoGame = new UnoGamePlay("Uno Game");
-      }
-      return unoGame;
-   }
+    public static UnoGamePlay getInstance() {
+        if (unoGame == null) {
+            unoGame = new UnoGamePlay("Uno Game");
+        }
+        return unoGame;
+    }
+    // UseCase #1 init table
 
-   // UseCase #1 init table
-   public void init ()
-   {
-      table.prepareTable();
-   }
+    public void init() {
+        deck.initDeck();
+        deck.shuffle();
+    }
 
-   // UseCase #2 signUp players
-   public void signUpPlayers ()
-   {
-      SignUpPlayers.sign();
-   }
+    // UseCase #2 signUp players
+//    public void signUpPlayers() {
+//        SignUpPlayers.sign();
+//    }
+//    UseCase #4 setDealer
+//
+    public int setDealer(int playerNum) {
+        UnoCard[] cards = new UnoCard[playerNum];
+        for (int i = 0; i < playerNum; i++) {
+            cards[i] = deck.getCard();
+            System.out.println("Player " + (i + 1) + "'s first card is " + cards[i].toString());
+            deck.pushDiscardPile(cards[i]);
+        }
+        return deck.compareToCard(cards);
+    }
 
-   // UseCase #4 setDealer
-   public void setDealer ()
-   {
-      int max = 0;
-      for (Player player : pM.currentPlayers) {
-         UnoCard card = table.pullCard();
-         UnoCardValue cardValue = card.getCardValue();
-         int value = cardValue.ordinal() > 9 ? 0 : cardValue.ordinal();
-         if (value > max) {
-            currentPlayer = player; // Now currentPlayer is the dealer
-         }
-         // UseCase #5 discard the card
-         table.pushCard(card);
-      }
-   }
+    // UseCase #6 distribute 7card to players in order of dealer-first
+    public UnoCard[] distributeCard(UnoPlayer player, int num) {
+        UnoCard[] cards = new UnoCard[num];
+        for (int i = 0; i < num; i++) {
+            cards[i] = deck.getCard();
+            player.addPlayerHand(cards[i]);
+        }
+        return cards;
+    }
 
-   // UseCase #6 distribute 7card to players in order of dealer-first
-   public void distributeCard ()
-   {
-      for (int i = 0; i < pM.totalPlayer; i++) {
-         int index = (i + currentPlayer.id) % totalPlayer;
-         for (int j = 0; j < N_CARDS_INI; j++) {
-            pM.currentPlayers[index].getCard(table.pullCard());
-         }
-      }
-   }
+    @Override
+    public void play() {
+        //TODO: to be implemented with VIEW
+    }
 
-   // UseCase #7 draw the top card to start the game
-   // UseCase #8 determines the first player to play, who is the player ID behind the dealer
-   public void drawTopCard ()
-   {
-      topCard = table.pullCard();
-      currentPlayer = pM.currentPlayers[(currentPlayer.id++) % totalPlayer];
-   }
+    @Override
+    public void declareWinner() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
-   @Override
-   public void play ()
-   {
-      //TODO: to be implemented with VIEW
-   }
+// UseCase #7 draw the top card to start the game
+// UseCase #8 determines the first player to play, who is the player ID behind the dealer
+    public UnoCard drawTopCard() {
+        while (true) {
+            setTopCard(deck.getCard());
+            setValidColor(topCard);
+            deck.pushDiscardPile(topCard);
+            if (topCard.getCardValue().ordinal() <= 9) {
+                System.out.println(topCard.toString());
+                return topCard;
+            }
+        }
+    }
 
-   @Override
-   public void declareWinner ()
-   {
-      throw new UnsupportedOperationException("Not supported yet.");
-   }
+    public boolean judgeIsWin(UnoPlayer player) {
+        if (player.getPlayerHand().isEmpty()) {
+            return true;
+        } else if (player.getPlayerHand().size() <= 2) {
+            System.out.println("\nsay UNOoooooooooooooooooooooooooooooooo!!!\n");
+            return false;
+        } else {
+            return false;
+        }
+    }
 
-   public UnoCard getTopCard ()
-   {
-      return topCard;
-   }
+    public boolean isValidCard(UnoCard card) {
+        if (card.getCardColor() == UnoCardColor.WILD) {
+            return true;
+        } else if (topCard.getCardColor() == UnoCardColor.WILD) {
+            return card.getCardColor() == validColor;
+        } else {
+            return (topCard.getCardColor() == card.getCardColor() || topCard.getCardValue() == card.getCardValue());
+        }
+    }
 
-   public Player getPreviousPlayer ()
-   {
-      return pM.currentPlayers[(currentPlayer.id - 1) % totalPlayer];
-   }
+    public boolean isValidCards(UnoPlayer player) {
+        for (UnoCard card : player.getPlayerHand()) {
+            if (isValidCard(card)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-   public ArrayList<Card> getPlayerHand (String id)
-   {
-      //TODO: to be implemented with playerManager and playerHandList
-      return pM.currentPlayers[id].playerHand;
-   }
 
-   public int getPlayerHandSize (String id)
-   {
-      //TODO: to be implemented with playerManager and playerHandList
-      return pM.currentPlayers[id].playerHand.length;
-   }
+    public void setNextPlayerIndex(int playerNum) {
+        if (gameDirection) {
+            if (++currentPlayerIndex == playerNum) {
+                currentPlayerIndex = 0;
+            }
+        } else {
+            if (--currentPlayerIndex == -1) {
+                currentPlayerIndex = playerNum - 1;
+            }
+        }
+    }
 
-   public UnoCard getPlayerHandCard (String id, int choice)
-   {
-      //TODO: to be implemented with playerManager and playerHandList
-      return pM.currentPlayers[id].playerHand[choice];
-   }
+    public void reverse() {
+        gameDirection = !gameDirection;
+    }
 
-   public boolean hasEmptyHand (String id)
-   {
-      return getPlayerHandSize(id) == 0 ? true : false;
-   }
+    public void dealWithWildCard(UnoPlayer player, int playerNum) {
+        if (null != topCard.getCardValue()) {
+            switch (topCard.getCardValue()) {
+                case DRAWFOUR:
+                    System.out.println("Since the last player played WILD card, you need to draw four CARDS. Here are four new CARDS");
+                    dealWithDrawCard(player,4);
+                    break;
+                case DRAWTWO:
+                    System.out.println("Since the last player played WILD card, you need to draw two CARDS. Here are your two new CARDS");
+                    dealWithDrawCard(player,2);
+                    break;
+                case REVERSE:
+                    reverse();
+                    setNextPlayerIndex(playerNum);
+                    setNextPlayerIndex(playerNum);
+                    System.out.println("Reverse successfully!!!");
+                    break;
+                case SKIP:
+                    setNextPlayerIndex(playerNum);
+                    System.out.println("Skip successfully!!!");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    public void dealWithDrawCard(UnoPlayer player, int num){
+        deck.showCards(distributeCard(player, num));
+    }
 
-   public boolean isValidColor (UnoCard card)
-   {
-      return validColor == card.getCardColor();
-   }
+    public UnoCardColor getValidColor() {
+        return validColor;
+    }
 
-   public boolean isValidValue (UnoCard card)
-   {
-      return validValue == card.getCardValue();
-   }
+    public void setValidColor(UnoCardColor validColor) {
+        this.validColor = validColor;
+    }
 
-   public void showCardOptions (UnoCard topCard)
-   {
-      for (int i = 0; i < currentPlayer.playerHand.length; i++) {
-         if (isValidColor(cacurrentPlayer.playerHand[i])) {
-            System.out.println("#" + (i + 1) + " Color Matched");
-         }
-         if (isValidValue(cacurrentPlayer.playerHand[i])) {
-            System.out.println("#" + (i + 1) + "Value Matched");
-         }
-      }
-   }
+    public boolean setValidColor(UnoCard card) {
+        if (card.getCardColor() == WILD) {
+            return false;
+        } else {
+            this.setValidColor(card.getCardColor());
+            return true;
+        }
+    }
 
-   public void showDrawOptions ()
-   {
-      System.out.println("Draw a card");
-      UnoCard newCard = table.pullCard();
-      if (newCard.getCardColor() == WILD) {
-         System.out.println("You've drew WILD card!");
-         table.pushCard(newCard);
-      }
-      else if (isValidColor(newCard) || isValidValue(newCard)) {
-         System.out.println("You've drew matched card!");
-         table.pushCard(newCard);
-      }
-      else {
-         System.out.println("You've got one more card in you hand");
-         currentPlayer.playerHand.add(newCard);
-      }
-   }
+    public void setCardColor(UnoCard card) {
+        validColor = card.getCardColor();
+    }
 
-   public void setNextPlayer (int number)
-   {
-      if (gameDirection) {
-         currentPlayer = pM.currentPlayers[(currentPlayerID + number) % totalPlayer];
-      }
-      else {
-         currentPlayer = pM.currentPlayers[(currentPlayerID - number + totalPlayer) % totalPlayer];
-      }
-   }
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
 
-   public void setCardColor (UnoCard card)
-   {
-      validColor = card.getCardColor();
-   }
+    public void setCurrentPlayerIndex(int currentPlayerIndex, int playerNum) {
+        if (currentPlayerIndex < 0) {
+            this.currentPlayerIndex = playerNum - 1;
+        } else if (currentPlayerIndex >= playerNum) {
+            this.currentPlayerIndex = 0;
+        } else {
+            this.currentPlayerIndex = currentPlayerIndex;
+        }
+    }
 
-   public boolean askReplay ()
-   {
-      Scanner src = new Scanner(System.in);
-      String output = src.nextLine();
-      System.out.println("Replay? y/n");
-      return "y".equals(output);
-   }
+    public UnoCard getTopCard() {
+        return topCard;
+    }
+
+    public void setTopCard(UnoCard topCard) {
+        this.topCard = topCard;
+    }
+
+    public boolean isGameDirection() {
+        return gameDirection;
+    }
+
+    public void setGameDirection(boolean gameDirection) {
+        this.gameDirection = gameDirection;
+    }
+
 }

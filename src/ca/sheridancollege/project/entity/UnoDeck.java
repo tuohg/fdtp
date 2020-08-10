@@ -10,9 +10,7 @@ import java.util.Stack;
  *
  * This class +++Insert Description Here+++
  *
- * @author Hangge Tuo 
- * Created: Jun 28, 2020 
- * Updated: Aug 9, 2020
+ * @author Hangge Tuo Created: Jun 28, 2020 Updated: Aug 10, 2020
  */
 public class UnoDeck extends GroupOfCards {
 
@@ -133,8 +131,13 @@ public class UnoDeck extends GroupOfCards {
     private void showCards(ArrayList<UnoCard> cards) {
         int count = 0;
         for (int i = 0; i < cards.size(); i++) {
-            System.out.println(++count + " " + cards.get(i).toString());
+            System.out.println((i + 1) + ". " + cards.get(i).toString());
         }
     }
 
+    public void showCards(UnoCard[] cards) {
+        for (int i = 0; i < cards.length; i++) {
+            System.out.println((i + 1) + ". " + cards[i].toString());
+        }
+    }
 }
