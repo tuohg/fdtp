@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import ca.sheridancollege.project.Player;
+import ca.sheridancollege.project.entity.UnoCard;
 
 /**
  * This is a subclass of Player.java
@@ -16,6 +17,7 @@ public class UnoPlayer extends Player {
     protected int winTimes = 0;
     protected int loseTimes = 0;
     private boolean isDealer = false;
+    ArrayList<UnoCard> playerHand = new ArrayList<>();
 
     public UnoPlayer(String name) {
         super(name);
@@ -26,7 +28,6 @@ public class UnoPlayer extends Player {
 
         //case 1:player name
         //case 1.1: the first player come in
-
         while (playerList.size() < 4) {
 
             if (!isPlayerExist(this.getName())) {
@@ -58,8 +59,41 @@ public class UnoPlayer extends Player {
             int r = random.nextInt(playerList.size());
 
             System.out.println(playerList.get(r) + " is the Dealer");
-            
+
         }
+    }
+
+    public ArrayList<String> getPlayerList() {
+        return playerList;
+    }
+
+    public void setPlayerList(ArrayList<String> playerList) {
+        this.playerList = playerList;
+    }
+
+    public ArrayList<UnoCard> getPlayerHand() {
+        return playerHand;
+    }
+
+    public void setPlayerHand(ArrayList<UnoCard> playerHand) {
+        this.playerHand = playerHand;
+    }
+
+    public void addPlayerHand(UnoCard card) {
+        playerHand.add(card);
+    }
+
+    public UnoCard popPlayerHand(int index) {
+        return playerHand.remove(index);
+    }
+
+    public int getPlayerHandSize() {
+        //TODO: to be implemented with playerManager and playerHandList
+        return playerHand.size();
+    }
+
+    public boolean hasEmptyHand() {
+        return playerHand.size() == 0 ? true : false;
     }
 
     /**
@@ -98,6 +132,14 @@ public class UnoPlayer extends Player {
 
     public void setIsDealer(boolean isDealer) {
         this.isDealer = isDealer;
+    }
+    
+    public String toString(){
+        String strPlayer = "Player "+this.getName();
+        if (isDealer) {
+            strPlayer +="(Dealer)";
+        }
+        return strPlayer;
     }
 
 }
