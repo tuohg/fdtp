@@ -131,10 +131,6 @@ public class UnoTable implements Tabel {
         }
     }
 
-//    public String showYesExit(String prompt) {
-//        String[] choices = new String[]{"Y", "E", "y", "e"};
-//        return Input.getString(prompt, choices);
-//    }
 
     public void showDrawFirstCard() {
         System.out.println("each player draws one card :");

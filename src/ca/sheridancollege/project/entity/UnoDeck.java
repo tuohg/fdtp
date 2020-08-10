@@ -8,9 +8,11 @@ import java.util.Stack;
 
 /**
  *
- * This class +++Insert Description Here+++
+ * This class operates UnoCard in game deck.
  *
- * @author Hangge Tuo Created: Jun 28, 2020 Updated: Aug 10, 2020
+ * @author Hangge Tuo 
+ * Created: Jun 28, 2020 
+ * Updated: Aug 10, 2020
  */
 public class UnoDeck extends GroupOfCards {
 
@@ -18,18 +20,17 @@ public class UnoDeck extends GroupOfCards {
     private ArrayList<UnoCard> availablePile;
     private ArrayList<UnoCard> discardPile;
     private static UnoDeck deck = null;
-//    private int cardsInDeck = 0;
 
     //main class for test
-    public static void main(String[] args) {
-        UnoDeck u1 = new UnoDeck(108);
-        u1.initDeck();
-        System.out.println("Before shuffle:");
-        u1.showCards(u1.availablePile);
-        System.out.println("After shuffle:");
-        u1.shuffle();
-        u1.showCards(u1.availablePile);
-    }
+//    public static void main(String[] args) {
+//        UnoDeck u1 = new UnoDeck(108);
+//        u1.initDeck();
+//        System.out.println("Before shuffle:");
+//        u1.showCards(u1.availablePile);
+//        System.out.println("After shuffle:");
+//        u1.shuffle();
+//        u1.showCards(u1.availablePile);
+//    }
 
     /**
      * UnoDeck constructor

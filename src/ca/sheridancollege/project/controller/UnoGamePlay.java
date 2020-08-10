@@ -1,5 +1,6 @@
 package ca.sheridancollege.project.controller;
 
+import ca.sheridancollege.project.Game;
 import ca.sheridancollege.project.entity.*;
 import ca.sheridancollege.project.player.*;
 import ca.sheridancollege.project.view.*;
@@ -44,11 +45,6 @@ public class UnoGamePlay extends Game {
     }
 
     // UseCase #2 signUp players
-//    public void signUpPlayers() {
-//        SignUpPlayers.sign();
-//    }
-//    UseCase #4 setDealer
-//
     public int setDealer(int playerNum) {
         UnoCard[] cards = new UnoCard[playerNum];
         for (int i = 0; i < playerNum; i++) {
