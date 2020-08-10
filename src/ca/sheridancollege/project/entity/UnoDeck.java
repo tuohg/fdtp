@@ -4,22 +4,24 @@ import ca.sheridancollege.project.Card;
 import ca.sheridancollege.project.GroupOfCards;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Stack;
 
 /**
  *
  * This class +++Insert Description Here+++
- * @author Hangge Tuo
- * Created: Jun 28, 2020
- * Updated: Jul 30, 2020
+ *
+ * @author Hangge Tuo 
+ * Created: Jun 28, 2020 
+ * Updated: Aug 9, 2020
  */
+public class UnoDeck extends GroupOfCards {
 
-public class UnoDeck extends GroupOfCards{
     private UnoCard[] unoCards;
-    private ArrayList<Card> availablePile;
-    private ArrayList<Card> discardPile;
-    
+    private ArrayList<UnoCard> availablePile;
+    private ArrayList<UnoCard> discardPile;
+    private static UnoDeck deck = null;
+//    private int cardsInDeck = 0;
+
     //main class for test
     public static void main(String[] args) {
         UnoDeck u1 = new UnoDeck(108);
@@ -30,35 +32,42 @@ public class UnoDeck extends GroupOfCards{
         u1.shuffle();
         u1.showCards(u1.availablePile);
     }
-    
+
     /**
      * UnoDeck constructor
      */
-    public UnoDeck(int size) {
+    private UnoDeck(int size) {
         super(size);
         unoCards = new UnoCard[108];
     }
-    
+
     /**
      * The method is for initialing the game cards, build 108 cards and add to availablePile
      */
+    public static UnoDeck getInstance() {
+        if (deck == null) {
+            deck = new UnoDeck(108);
+        }
+        return deck;
+    }
+
     public void initDeck() {
         UnoCardColor[] colors = UnoCardColor.values();
         UnoCardValue[] values = UnoCardValue.values();
         int cardsInDeck = 0;
-        
+
         //Add all non-Wild Cards
         for (int i = 0; i < colors.length - 1; i++) {
             UnoCardColor color = colors[i];
             for (int j = 0; j < 13; j++) {
                 UnoCardValue value = values[j];
                 unoCards[cardsInDeck++] = new UnoCard(color, value);
-                if (j>0) {
+                if (j > 0) {
                     unoCards[cardsInDeck++] = new UnoCard(color, value);
                 }
             }
         }
-        
+
         //Add Wild Cards: Wild Wild and Wild DrawFour
         UnoCardValue[] values1 = new UnoCardValue[]{UnoCardValue.WILD, UnoCardValue.DRAWFOUR};
         for (UnoCardValue value : values1) {
@@ -67,8 +76,8 @@ public class UnoDeck extends GroupOfCards{
             }
         }
         //Add whole Uno cards to availablePile.
-        availablePile = new ArrayList<Card>();
-        discardPile = new ArrayList<Card>();
+        availablePile = new ArrayList<>();
+        discardPile = new ArrayList<>();
         for (UnoCard card : unoCards) {
             availablePile.add(card);
         }
@@ -85,20 +94,47 @@ public class UnoDeck extends GroupOfCards{
             try {
                 throw new Exception("The number of cards should be 108.");
             } catch (Exception ex) {
-                Logger.getLogger(UnoDeck.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
         Collections.shuffle(availablePile);
     }
+
+    public UnoCard getCard() {
+        if (availablePile.size() == 0) {
+            throw new IllegalArgumentException("Cannot draw a card since thiere are no cards in the deck");
+        }
+        return availablePile.remove(availablePile.size() - 1);
+    }
+
+    public boolean pushDiscardPile(UnoCard card) {
+        return discardPile.add(card);
+    }
+
+    public int compareToCard(UnoCard[] cards) {
+        int[] value = new int[cards.length];
+        int maxIndex = 0;
+        for (int i = 0; i < cards.length; i++) {
+            value[i] = cards[i].getCardValue().ordinal() > 9 ? 0 : cards[i].getCardValue().ordinal();
+        }
+        for (int i = 0; i < value.length - 1; i++) {
+            if (value[maxIndex] < value[i + 1]) {
+                maxIndex = i + 1;
+            }
+        }
+        return maxIndex;
+    }
+
     /**
      * The method is for displaying all cards as strings
+     *
      * @param cards The collection of CARDS that need to be displayed
      */
-    private void showCards(ArrayList<Card> cards){
-        int count=0;
+    private void showCards(ArrayList<UnoCard> cards) {
+        int count = 0;
         for (int i = 0; i < cards.size(); i++) {
-            System.out.println(++count + " " +cards.get(i).toString());
+            System.out.println(++count + " " + cards.get(i).toString());
         }
     }
-    
-   }
+
+}
