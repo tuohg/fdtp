@@ -16,7 +16,6 @@ import ca.sheridancollege.project.player.UnoPlayer;
 public class UnoTable implements Tabel {
 
     private UnoPlayer[] player;
-    private UnoCard card;
     private UnoGamePlay play;
     private static UnoTable table = null;
     boolean isWin = false;
@@ -35,22 +34,30 @@ public class UnoTable implements Tabel {
                     showDivider();
                     break;
                 case 2:
-                    if (table.player.length <3) {
+                    if (table.player.length < 3) {
                         System.out.println("The players is under 3, please register the user first.");
                         continue;
                     }
                     table.prepareTable();
                     showDivider();
-                    if (!showIsContinue()) continue;
+                    if (!showIsContinue()) {
+                        continue;
+                    }
                     table.showDrawFirstCard();
                     showDivider();
-                    if (!showIsContinue()) continue;
+                    if (!showIsContinue()) {
+                        continue;
+                    }
                     table.showDrawTopCard();
                     showDivider();
-                    if (!showIsContinue()) continue;
+                    if (!showIsContinue()) {
+                        continue;
+                    }
                     table.showDistributeCard();
                     showDivider();
-                    if (!showIsContinue()) continue;
+                    if (!showIsContinue()) {
+                        continue;
+                    }
                     table.showPlay();
                     break;
                 case 3:
@@ -77,7 +84,7 @@ public class UnoTable implements Tabel {
      * Prepares the table to start the game. Any remaining cards in the Discard Pile are put back into the deck
      */
     public void prepareTable() {
-   
+
         play.init();
         System.out.println("The shuffle is complete and you are now ready to play.");
     }
@@ -108,20 +115,73 @@ public class UnoTable implements Tabel {
         return in;
     }
 
-
     public void showPlayerRegister() {
-        int numOfPlayer = Input.getInt("How many people play the game(number between 3 and 6)", 3, 6);
-        player = new UnoPlayer[numOfPlayer];
-        for (int i = 0; i < numOfPlayer; i++) {
-            System.out.println("Please enter the No." + (i + 1) + " player's name.");
-            String name = Input.getString("Please enter the player's name(length between 4 and 8).", 4, 8);
-            player[i] = new UnoPlayer(name);
+        int numOfPlayer =0;
+        boolean isReturn = true;
+        while (isReturn) {
+            switch (showRegisterMenu()) {
+                case 1:
+                    if (player != null) {
+                        String prompt = "There are "+player.length+" players now. If yes, they are cleared. Still continue?(y/n)";
+                        if(!showIsContinue(prompt)) continue;
+                    }
+                    numOfPlayer = Input.getInt("How many players play the game(number between 3 and 8)", 3, 8);
+                    registerPlayers(false, numOfPlayer);
+                    isReturn=false;
+                    break;
+                case 2:
+                    if (player == null) {
+                        System.out.println("Error: No player registered yet, please register first.");
+                    } else if (player.length >=8) {
+                        System.out.println("Error: The number of registered players has reached maximum - 8.");
+                    }else{
+                        String prompt ="There are "+ player.length +" players now, maximum 8.\nHow many players you want to add:";
+                        numOfPlayer = Input.getInt(prompt, 3-player.length, 8-player.length);
+                        registerPlayers(true, numOfPlayer);
+                    }
+                    break;
+                case 3:
+                    isReturn=false;
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            
         }
-        System.out.println("Registration is complete, return main menu.");
+    }
+
+    public int showRegisterMenu() {
+        System.out.println("****************** Register Menu ******************");
+        System.out.println("1. New players");
+        System.out.println("2. Add players");
+        System.out.println("3. Return main menu");
+        System.out.println("***************************************************");
+        int in = Input.getInt("Please choose menu option:", 1, 3);
+        return in;
     }
     
-    public void showBillboard(){
-        System.out.println("Coming soon!!!");
+    public void registerPlayers(boolean isAdd, int numOfPlayer){
+        if (isAdd) {
+            numOfPlayer += player.length;
+        }
+        UnoPlayer[] tmpPlayer = new UnoPlayer[numOfPlayer];
+        for (int i = 0; i < numOfPlayer; i++) {
+            if (isAdd && i<player.length) {
+                tmpPlayer[i] = player[i];
+            }else{
+                System.out.print("Please enter the No." + (i + 1) + " player's name.");
+                String name = Input.getString("(length between 3 and 8)", 3, 8);
+                tmpPlayer[i] = new UnoPlayer(name);
+            }
+        }
+        player = tmpPlayer;
+        System.out.println("Registration is complete, return main menu.");
+    }
+
+    public void showBillboard() {
+        showDivider();
+        System.out.println("The function of 'BILLBOARD' is coming soon!!!");
+        showDivider();
     }
 
     public void showPlayerHand(UnoPlayer player) {
@@ -131,10 +191,9 @@ public class UnoTable implements Tabel {
         }
     }
 
-
     public void showDrawFirstCard() {
-        System.out.println("each player draws one card :");
-        int numDearler = play.setDealer(player.length);
+        System.out.println("Each player draws one card:");
+        int numDearler = play.setDealer(player, player.length);
         play.setCurrentPlayerIndex(numDearler, player.length);
         player[numDearler].setIsDealer(true);
         System.out.println("The dealer is " + player[numDearler].toString());
@@ -193,7 +252,7 @@ public class UnoTable implements Tabel {
             showDivider();
             play.dealWithWildCard(currentPlayer, player.length);
             showCurrentPlayer();
-            showIsContinue("Continue?(y/n)(Enter = yes)");
+            showIsContinue("Continue?(y/n)");
             showDivider();
         }
     }
@@ -217,16 +276,16 @@ public class UnoTable implements Tabel {
         play.dealWithDrawCard(player, 1);
     }
 
-    public static boolean  showIsContinue(String prompt) {
+    public static boolean showIsContinue(String prompt) {
         String in = Input.getString(prompt, new String[]{"Y", "y", "N", "n", ""});
         if ("N".equals(in) || "n".equals(in)) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
-    
-    public static boolean  showIsContinue(){
+
+    public static boolean showIsContinue() {
         return showIsContinue("Whether or not to continue?(y/n)");
     }
 

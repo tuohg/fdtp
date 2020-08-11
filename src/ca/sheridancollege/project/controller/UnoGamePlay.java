@@ -3,8 +3,6 @@ package ca.sheridancollege.project.controller;
 import ca.sheridancollege.project.Game;
 import ca.sheridancollege.project.entity.*;
 import ca.sheridancollege.project.player.*;
-import ca.sheridancollege.project.view.*;
-import java.util.*;
 
 /**
  * @author Ye Eun Park is going to be the greatest Java programmer of all time
@@ -44,12 +42,12 @@ public class UnoGamePlay extends Game {
         deck.shuffle();
     }
 
-    // UseCase #2 signUp players
-    public int setDealer(int playerNum) {
+//    UseCase #4 setDealer
+    public int setDealer(UnoPlayer[] players, int playerNum) {
         UnoCard[] cards = new UnoCard[playerNum];
         for (int i = 0; i < playerNum; i++) {
             cards[i] = deck.getCard();
-            System.out.println("Player " + (i + 1) + "'s first card is " + cards[i].toString());
+            System.out.println(players[i].toString(i) + "'s first card is " + cards[i].toString());
             deck.pushDiscardPile(cards[i]);
         }
         return deck.compareToCard(cards);
