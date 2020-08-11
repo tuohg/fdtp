@@ -110,7 +110,7 @@ public class UnoTable implements Tabel {
         System.out.println("3. Billboard");
         System.out.println("4. Exit");
         System.out.println("***********************************************");
-        int in = Input.getInt("Please choose menu option:", 1, 3);
+        int in = Input.getInt("Please choose menu option:", 1, 4);
         showDivider();
         return in;
     }
@@ -252,7 +252,7 @@ public class UnoTable implements Tabel {
             showDivider();
             play.dealWithWildCard(currentPlayer, player.length);
             showCurrentPlayer();
-            showIsContinue("Continue?(y/n)");
+            if(!showIsContinue("Continue?(y/n)")) break;;
             showDivider();
         }
     }
