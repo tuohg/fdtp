@@ -65,7 +65,7 @@ public class UnoTable implements Tabel {
                     table.showBillboard();
                     break;
                 case 4:
-                    showExit();
+                    showGameOver();
                     break;
                 default:
                     throw new AssertionError();
@@ -136,7 +136,7 @@ public class UnoTable implements Tabel {
                     if (player == null) {
                         System.out.println("Error: No player registered yet, please register first.");
                     } else if (player.length >=maxPlayerNum) {
-                        System.out.println("Error: The number of registered players has reached maximum - 8.");
+                        System.out.println("Error: The number of registered players has reached maximum - "+maxPlayerNum);
                     }else{
                         prompt ="There are "+ player.length +" players now, maximum 8.\nHow many players you want to add:";
                         numOfPlayer = Input.getInt(prompt, minPlayerNum-player.length, maxPlayerNum-player.length);
@@ -294,8 +294,8 @@ public class UnoTable implements Tabel {
         showIsContinue("Whether to return to the main menu(y/n)");
     }
 
-    public void showGameOver() {
-        System.out.println("Game Over");
+    public static void showGameOver() {
+        System.out.println("Game Over. Bye!!!");
         System.exit(0);
     }
 
