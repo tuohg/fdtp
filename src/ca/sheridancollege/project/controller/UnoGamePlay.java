@@ -11,7 +11,7 @@ import ca.sheridancollege.project.player.*;
 public class UnoGamePlay extends Game {
 
     private boolean gameDirection = true; // true==clockwise, false==couterclockwise
-    private UnoCard topCard;
+    private UnoCard topCard, wildCard;
     private UnoDeck deck;
     private int currentPlayerIndex;
 
@@ -113,7 +113,6 @@ public class UnoGamePlay extends Game {
         return false;
     }
 
-
     public void setNextPlayerIndex(int playerNum) {
         if (gameDirection) {
             if (++currentPlayerIndex == playerNum) {
@@ -135,11 +134,11 @@ public class UnoGamePlay extends Game {
             switch (topCard.getCardValue()) {
                 case DRAWFOUR:
                     System.out.println("Since the last player played WILD card, you need to draw four CARDS. Here are four new CARDS");
-                    dealWithDrawCard(player,4);
+                    dealWithDrawCard(player, 4);
                     break;
                 case DRAWTWO:
                     System.out.println("Since the last player played WILD card, you need to draw two CARDS. Here are your two new CARDS");
-                    dealWithDrawCard(player,2);
+                    dealWithDrawCard(player, 2);
                     break;
                 case REVERSE:
                     reverse();
@@ -156,9 +155,17 @@ public class UnoGamePlay extends Game {
             }
         }
     }
-    
-    public void dealWithDrawCard(UnoPlayer player, int num){
+
+    public void dealWithDrawCard(UnoPlayer player, int num) {
         deck.showCards(distributeCard(player, num));
+    }
+
+    public void playOneCard(UnoPlayer player, int index) {
+        UnoCard card =player.popPlayerHand(index);
+        System.out.println("You play card: "+card.toString()+" successfully!");
+        setTopCard(card);
+        setValidColor(getTopCard());
+        if (card.getCardColor() == WILD) this.wildCard=card;
     }
 
     public UnoCardColor getValidColor() {
@@ -181,7 +188,6 @@ public class UnoGamePlay extends Game {
 //    public void setCardColor(UnoCard card) {
 //        validColor = card.getCardColor();
 //    }
-
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }
@@ -212,4 +218,11 @@ public class UnoGamePlay extends Game {
         this.gameDirection = gameDirection;
     }
 
+    public UnoCard getWildCard() {
+        return wildCard;
+    }
+
+    public void setWildCard(UnoCard wildCard) {
+        this.wildCard = wildCard;
+    }
 }

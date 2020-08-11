@@ -19,6 +19,7 @@ public class UnoTable implements Tabel {
     private UnoGamePlay play;
     private static UnoTable table = null;
     private boolean isWin = false;
+    private final int minPlayerNum=2, maxPlayerNum=4;
 
     private UnoTable() {
         play = UnoGamePlay.getInstance();
@@ -94,10 +95,10 @@ public class UnoTable implements Tabel {
         showDivider();
         System.out.println("\t\t\t\tUNO CARD GAME");
         System.out.println("\nUNO RULES:\n");
-        System.out.println("TO PLAY A CARD, WRITE PLAY FOLLOWED BY THE CARD NAME AND PRESS ENTER\n");
-        System.out.println("IF YOU DO NOT HAVE ANY MATCHED CARD, WRITE DRAW AND PRESS ENTER\n");
+        System.out.println("TO PLAY A CARD, WRITE THE CARD NUMBER AND ENTER\n");
+        System.out.println("IF YOU DO NOT HAVE ANY MATCHED CARD, SYSTEM WILL DRAW A CARD\n");
         System.out.println("AFTER DRAWING A CARD, IF YOU STILL DO NOT HAVE A MATCHED CAED,  "
-                + "WRITE PASS TO PASS THE TURN TO NEXT PLAYER AND PRESS ENTER");
+                + "SYSTEM WILL PASS AUTOMATICLY.");
         showDivider();
     }
 
@@ -117,26 +118,28 @@ public class UnoTable implements Tabel {
 
     public void showPlayerRegister() {
         int numOfPlayer =0;
+        String prompt;
         boolean isReturn = true;
         while (isReturn) {
             switch (showRegisterMenu()) {
                 case 1:
                     if (player != null) {
-                        String prompt = "There are "+player.length+" players now. If yes, they are cleared. Still continue?(y/n)";
+                        prompt = "There are "+player.length+" players now. If yes, they are cleared. Still continue?(y/n)";
                         if(!showIsContinue(prompt)) continue;
                     }
-                    numOfPlayer = Input.getInt("How many players play the game(number between 3 and 8)", 3, 8);
+                    prompt = "How many players play the game(number between "+minPlayerNum+" and "+maxPlayerNum+")";
+                    numOfPlayer = Input.getInt(prompt, minPlayerNum, maxPlayerNum);
                     registerPlayers(false, numOfPlayer);
                     isReturn=false;
                     break;
                 case 2:
                     if (player == null) {
                         System.out.println("Error: No player registered yet, please register first.");
-                    } else if (player.length >=8) {
+                    } else if (player.length >=maxPlayerNum) {
                         System.out.println("Error: The number of registered players has reached maximum - 8.");
                     }else{
-                        String prompt ="There are "+ player.length +" players now, maximum 8.\nHow many players you want to add:";
-                        numOfPlayer = Input.getInt(prompt, 3-player.length, 8-player.length);
+                        prompt ="There are "+ player.length +" players now, maximum 8.\nHow many players you want to add:";
+                        numOfPlayer = Input.getInt(prompt, minPlayerNum-player.length, maxPlayerNum-player.length);
                         registerPlayers(true, numOfPlayer);
                     }
                     break;
@@ -146,7 +149,6 @@ public class UnoTable implements Tabel {
                 default:
                     throw new AssertionError();
             }
-            
         }
     }
 
@@ -229,13 +231,17 @@ public class UnoTable implements Tabel {
             currentPlayer = player[play.getCurrentPlayerIndex()];
             showCurrentPlayer();
             showPlayerHand(currentPlayer);
-
+            
             if (play.isValidCards(currentPlayer)) {
                 if (!showChooseCards(currentPlayer)) {
                     continue;
                 }
             } else {
                 showDrawCards(currentPlayer);
+                if (play.isValidCard(currentPlayer.getPlayerHand().get(currentPlayer.getPlayerHandSize()-1))) {
+                    System.out.println("The card you drawed is valid, it's played.");
+                    play.playOneCard(currentPlayer, currentPlayer.getPlayerHandSize()-1);
+                }
             }
 
             showChooseValidColor();
@@ -261,9 +267,7 @@ public class UnoTable implements Tabel {
         String prompt = "Please choose the CARDS you are going to play.";
         int playerChoice = Input.getInt(prompt, 1, player.getPlayerHandSize());
         if (play.isValidCard(player.getPlayerHand().get(playerChoice - 1))) {
-            play.setTopCard(player.popPlayerHand(playerChoice - 1));
-            play.setValidColor(play.getTopCard());
-            System.out.println("Successfully played.");
+            play.playOneCard(player, playerChoice-1);
             return true;
         } else {
             System.out.println("The card you have chosen is not valid");
@@ -315,12 +319,13 @@ public class UnoTable implements Tabel {
 
     private void showChooseValidColor() {
         int playerChoice;
-        if (play.getTopCard().getCardColor() == UnoCardColor.WILD) {
+        if (play.getWildCard().getCardColor() == UnoCardColor.WILD) {
             System.out.println("Since you played a WILD CARD, you need to specify the valid color");
             showColorOption();
             playerChoice = Input.getInt("Please choose(1-4):", 1, 4);
             play.setValidColor(UnoCardColor.values()[playerChoice - 1]);
             System.out.println("Set valid color successfully!! The valid color is " + play.getValidColor());
+            play.setWildCard(null);
         }
     }
 
