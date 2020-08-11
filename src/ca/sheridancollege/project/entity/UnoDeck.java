@@ -1,10 +1,8 @@
 package ca.sheridancollege.project.entity;
 
-import ca.sheridancollege.project.Card;
 import ca.sheridancollege.project.GroupOfCards;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Stack;
 
 /**
  *

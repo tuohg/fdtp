@@ -11,16 +11,12 @@ import ca.sheridancollege.project.player.*;
 public class UnoGamePlay extends Game {
 
     private boolean gameDirection = true; // true==clockwise, false==couterclockwise
-//   private UnoPlayer[] currentPlayers;
     private UnoCard topCard;
     private UnoDeck deck;
     private int currentPlayerIndex;
 
     private UnoCardColor validColor;
-//    private UnoCardValue validValue;
     private static final UnoCardColor WILD = UnoCardColor.WILD;
-
-//   private int totalPlayer = pM.totalPlayer;
     private static UnoGamePlay unoGame = null;
     private final static int N_CARDS_INI = 7;
 
@@ -182,9 +178,9 @@ public class UnoGamePlay extends Game {
         }
     }
 
-    public void setCardColor(UnoCard card) {
-        validColor = card.getCardColor();
-    }
+//    public void setCardColor(UnoCard card) {
+//        validColor = card.getCardColor();
+//    }
 
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;

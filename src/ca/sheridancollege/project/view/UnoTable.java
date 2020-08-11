@@ -18,7 +18,7 @@ public class UnoTable implements Tabel {
     private UnoPlayer[] player;
     private UnoGamePlay play;
     private static UnoTable table = null;
-    boolean isWin = false;
+    private boolean isWin = false;
 
     private UnoTable() {
         play = UnoGamePlay.getInstance();
@@ -278,11 +278,7 @@ public class UnoTable implements Tabel {
 
     public static boolean showIsContinue(String prompt) {
         String in = Input.getString(prompt, new String[]{"Y", "y", "N", "n", ""});
-        if ("N".equals(in) || "n".equals(in)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !("N".equals(in) || "n".equals(in));
     }
 
     public static boolean showIsContinue() {
@@ -296,6 +292,7 @@ public class UnoTable implements Tabel {
 
     public void showGameOver() {
         System.out.println("Game Over");
+        System.exit(0);
     }
 
     public static void showExit() {

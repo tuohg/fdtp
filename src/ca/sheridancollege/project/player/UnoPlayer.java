@@ -1,8 +1,6 @@
 package ca.sheridancollege.project.player;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
 import ca.sheridancollege.project.Player;
 import ca.sheridancollege.project.entity.UnoCard;
 
@@ -18,7 +16,7 @@ public class UnoPlayer extends Player {
     protected int winTimes = 0;
     protected int loseTimes = 0;
     private boolean isDealer = false;
-    ArrayList<UnoCard> playerHand = new ArrayList<>();
+    protected ArrayList<UnoCard> playerHand = new ArrayList<>();
 
     public UnoPlayer(String name) {
         super(name);
@@ -54,19 +52,6 @@ public class UnoPlayer extends Player {
         return playerHand.size() == 0 ? true : false;
     }
 
-    /**
-     *
-     * @param name
-     * @return
-     */
-//    public boolean isPlayerExist(String name) {
-//        boolean isExist = true;
-//        if (playerList.lastIndexOf(name) == -1) {
-////         System.out.println("Your player name can be used.");// Returning -1 means that no same name exist
-//            isExist = false;
-//        }
-//        return isExist; // return true means the name already exist
-//    }
 
     public int getWinTimes() {
         return winTimes;
