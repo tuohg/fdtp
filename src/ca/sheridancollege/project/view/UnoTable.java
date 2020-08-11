@@ -151,11 +151,11 @@ public class UnoTable implements Tabel {
     }
 
     public int showRegisterMenu() {
-        System.out.println("****************** Register Menu ******************");
+        System.out.println("**************** Register Menu ****************");
         System.out.println("1. New players");
         System.out.println("2. Add players");
         System.out.println("3. Return main menu");
-        System.out.println("***************************************************");
+        System.out.println("***********************************************");
         int in = Input.getInt("Please choose menu option:", 1, 3);
         return in;
     }
