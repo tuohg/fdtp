@@ -19,7 +19,7 @@ public class UnoTable implements Tabel {
     private UnoGamePlay play;
     private static UnoTable table = null;
     private boolean isWin = false;
-    private final int minPlayerNum=2, maxPlayerNum=4;
+    private final static int minPlayerNum=2, maxPlayerNum=4;
 
     private UnoTable() {
         play = UnoGamePlay.getInstance();
@@ -35,8 +35,8 @@ public class UnoTable implements Tabel {
                     showDivider();
                     break;
                 case 2:
-                    if (table.player.length < 3) {
-                        System.out.println("The players is under 3, please register the user first.");
+                    if (table.player == null || table.player.length < minPlayerNum) {
+                        System.out.println("The number of players isn't meet minimum "+minPlayerNum+", please register first.");
                         continue;
                     }
                     table.prepareTable();
@@ -97,7 +97,7 @@ public class UnoTable implements Tabel {
         System.out.println("\nUNO RULES:\n");
         System.out.println("TO PLAY A CARD, WRITE THE CARD NUMBER AND ENTER\n");
         System.out.println("IF YOU DO NOT HAVE ANY MATCHED CARD, SYSTEM WILL DRAW A CARD\n");
-        System.out.println("AFTER DRAWING A CARD, IF YOU STILL DO NOT HAVE A MATCHED CAED,  "
+        System.out.println("AFTER DRAWING A CARD, IF YOU STILL DO NOT HAVE A MATCHED CAED,\n"
                 + "SYSTEM WILL PASS AUTOMATICLY.");
         showDivider();
     }
