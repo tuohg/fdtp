@@ -319,7 +319,7 @@ public class UnoTable implements Tabel {
 
     private void showChooseValidColor() {
         int playerChoice;
-        if (play.getWildCard().getCardColor() == UnoCardColor.WILD) {
+        if (play.getTopCard().getCardColor() == UnoCardColor.WILD) {
             System.out.println("Since you played a WILD CARD, you need to specify the valid color");
             showColorOption();
             playerChoice = Input.getInt("Please choose(1-4):", 1, 4);
